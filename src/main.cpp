@@ -22,6 +22,10 @@
 
 
 int convertUserInput(char input);
+void transferData(int address, int data);
+void sendMessage(String message);
+
+
 
 void setup() {
   Serial.begin(9600);
@@ -84,241 +88,128 @@ void loop() {
   switch(option){
     case 'W':
       
-      Serial.println("#####################");
-      Serial.println("");
-      Serial.println("Waking up the max7219");
-      Serial.println("");
-      Serial.println("#####################");
-      //Some white lines
-      Serial.println("");
-      Serial.println("");
+      sendMessage("Waking up the max7219");
+      transferData(0x0C, 0x01);
 
-      digitalWrite(SS_PIN, LOW);
-      SPI.transfer(0x0C);
-      SPI.transfer(0x01);
-      digitalWrite(SS_PIN, HIGH);
-
-      delay(1000);
       break;
     case 'S':
-      Serial.println("#####################");
-      Serial.println("");
-      Serial.println("Shutting down the max7219");
-      Serial.println("");
-      Serial.println("#####################");
-      //Some white lines
-      Serial.println("");
-      Serial.println("");
 
-      digitalWrite(SS_PIN, LOW);
-      SPI.transfer(0x0C);
-      SPI.transfer(0x00);
-      digitalWrite(SS_PIN, HIGH);
+      sendMessage("Shutting down the max7219");
+      transferData(0x0C, 0x00);
 
-      delay(1000);
       break;
     case 'T':
-      Serial.println("#####################");
-      Serial.println("");
-      Serial.println("Entering in the test mode");
-      Serial.println("");
-      Serial.println("#####################");
-      
-      //Some white lines
-      Serial.println("");
-      Serial.println("");
 
-      digitalWrite(SS_PIN, LOW);
-      SPI.transfer(0x0F);
-      SPI.transfer(0x01);
-      digitalWrite(SS_PIN, HIGH);
+      sendMessage("Entering in the test mode");
+      transferData(0x0F, 0x01);
 
-      delay(1000);
       break;
     case 'N':
-      Serial.println("#####################");
-      Serial.println("");
-      Serial.println("Entering in the normal mode");
-      Serial.println("");
-      Serial.println("#####################");
-      //Some white lines
-      Serial.println("");
-      Serial.println("");
 
-      digitalWrite(SS_PIN, LOW);
-      SPI.transfer(0x0F);
-      SPI.transfer(0x00);
-      digitalWrite(SS_PIN, HIGH);
+      sendMessage("Entering in the normal mode");
+      transferData(0x0F, 0x00);
 
-      delay(1000);
       break;
     case 'M':
+
+      sendMessage("Manual mode");
     
       //read the address
       Serial.println("Please enter the address:");
       while(!Serial.available());
       address = Serial.read();
 
+      delay(500);
+
       //read the data
       Serial.println("Please enter the data:");
       while(!Serial.available());
       data = Serial.read();
 
-      //send the data
-      digitalWrite(SS_PIN, LOW);
-      SPI.transfer(convertUserInput(address));
-      SPI.transfer(convertUserInput(data));
-      digitalWrite(SS_PIN, HIGH);
-      break;
+      transferData(convertUserInput(address), convertUserInput(data));
 
-    
-      Serial.println("#####################");
-      Serial.println("");
-      Serial.println("In development");
-      Serial.println("");
-      Serial.println("#####################");
-
-      delay(1000);
       break;
 
     case 'O':
 
-      Serial.println("#####################");
-      Serial.println("");
-      Serial.println("Turning on all the leds");
-      Serial.println("");
-      Serial.println("#####################");
-
-      //Some white lines
-      Serial.println("");
-      Serial.println("");
-
+      sendMessage("Turning on all the leds");
       for(int i = 1; i <= 8; i++){
-        digitalWrite(SS_PIN, LOW);
-        SPI.transfer(i);
-        SPI.transfer(0x0F);
-        digitalWrite(SS_PIN, HIGH);
+        transferData(i, 0x0F);
         delay(1000);
       }
-
-      delay(1000);
+      
       break;
 
     case 'F':
       
-        Serial.println("#####################");
-        Serial.println("");
-        Serial.println("Turning off all the leds");
-        Serial.println("");
-        Serial.println("#####################");
-  
-        //Some white lines
-        Serial.println("");
-        Serial.println("");
-  
-        for(int i = 1; i <= 8; i++){
-          digitalWrite(SS_PIN, LOW);
-          SPI.transfer(i);
-          SPI.transfer(0x00);
-          digitalWrite(SS_PIN, HIGH);
-          delay(1000);
-        }
-  
+      sendMessage("Turning off all the leds");
+
+      for(int i = 1; i <= 8; i++){
+
+        transferData(i, 0x00);
         delay(1000);
-        break;
+
+      }
+  
+      
+      break;
 
     case 'D':
         
-          Serial.println("#####################");
-          Serial.println("");
-          Serial.println("No decode mode");
-          Serial.println("");
-          Serial.println("#####################");
-    
-          //Some white lines
-          Serial.println("");
-          Serial.println("");
-    
-          digitalWrite(SS_PIN, LOW);
-          SPI.transfer(0x09);
-          SPI.transfer(0x00);
-          digitalWrite(SS_PIN, HIGH);
-    
-          delay(1000);
-          break;
+      sendMessage("No decode mode");
+      transferData(0x09, 0x00);
+
+      break;
 
     case 'I':
 
-          Serial.println("#####################");
-          Serial.println("");
-          Serial.println("Minimum intensity");
-          Serial.println("");
-          Serial.println("#####################");
-    
-          //Some white lines
-          Serial.println("");
-          Serial.println("");
-    
-          digitalWrite(SS_PIN, LOW);
-          SPI.transfer(0x0A);
-          SPI.transfer(0x00);
-          digitalWrite(SS_PIN, HIGH);
-    
-          delay(1000);
-          break;
+      sendMessage("Minimum intensity");
+      transferData(0x0A, 0x00);
+
+      break;
 
     case 'H':
 
-          Serial.println("#####################");
-          Serial.println("");
-          Serial.println("Maximum intensity");
-          Serial.println("");
-          Serial.println("#####################");
-    
-          //Some white lines
-          Serial.println("");
-          Serial.println("");
-    
-          digitalWrite(SS_PIN, LOW);
-          SPI.transfer(0x0A);
-          SPI.transfer(0x0F);
-          digitalWrite(SS_PIN, HIGH);
-    
-          delay(1000);
-          break;
+      sendMessage("Maximum intensity");
+      transferData(0x0A, 0x0F);
+
+      break;
 
     case 'L':
 
-          Serial.println("#####################");
-          Serial.println("");
-          Serial.println("Scan limit");
-          Serial.println("");
-          Serial.println("#####################");
-    
-          //Some white lines
-          Serial.println("");
-          Serial.println("");
-    
-          digitalWrite(SS_PIN, LOW);
-          SPI.transfer(0x0B);
-          SPI.transfer(0x07);
-          digitalWrite(SS_PIN, HIGH);
-    
-          delay(1000);
-          break;
-
+      sendMessage("Scan limit");
+      transferData(0x0B, 0x07);
+   
+      break;
 
     default:
-      Serial.println("#####################");
-      Serial.println("");
-      Serial.println("Invalid option");
-      Serial.println("");
-      Serial.println("#####################");
+    
+      sendMessage("Invalid option");
 
-      delay(1000);
       break;
   }
 
+}
+
+void transferData(int address, int data){
+  digitalWrite(SS_PIN, LOW);
+  SPI.transfer(address);
+  SPI.transfer(data);
+  digitalWrite(SS_PIN, HIGH);
+}
+
+void sendMessage(String message){
+  Serial.println("#####################");
+  Serial.println("");
+  Serial.println(message);
+  Serial.println("");
+  Serial.println("#####################");
+
+  //Some white lines
+  Serial.println("");
+  Serial.println("");
+
+  delay(1000);
 }
 
 int convertUserInput(char input){
